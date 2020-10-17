@@ -2,7 +2,7 @@ const Router = require("koa-router");
 const router = new Router();
 
 // 处理信息
-const handle = (socket, type, msg) => {
+const handle = (socket, type, msg, tunnelId) => {
   switch (type) {
     case "send":
       socket.emit("msg", msg);
@@ -49,14 +49,19 @@ router.post("/ws/push", ctx => {
 
   tunnelIds.forEach(tunnelId => {
     if (!global.tunnels[tunnelId]) {
-      console.debug(`ws/push tunnelId ${tunnelId} 不存在，跳过`)
+      console.debug(`ws/push tunnelId ${tunnelId} 不存在`)
       return
     }
     
     const { socket } = global.tunnels[tunnelId];
-    if (socket) {
-      handle(socket, type, msg);
+    if (!socket) {
+      if (type === 'close') {
+        delete global.tunnels[tunnelId]
+      }
+      return
     }
+
+    handle(socket, type, msg, tunnelId);
   });
 
   ctx.body = {

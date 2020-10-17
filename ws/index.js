@@ -9,6 +9,9 @@ const ws = io => {
     const tunnel = global.tunnels[tunnelId];
     
     tunnel.socket = socket;
+
+    console.debug(`nsp connection successful ${tunnelId} 已建立连接`)
+    
     socket.on("msg", function(data) {
       axios.post(tunnel.url+"a", { tunnelId, token, data })
     });

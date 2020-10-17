@@ -4,13 +4,25 @@ const { check,compute } = require("../../utils/signature");
 const config = require("../../config/index");
 const router = new Router();
 
-// 业务服务器需要提供，token，url，signature
+// 查看服务器当前的所有隧道
 router.post("/get/tunnels", ctx => {
-  console.log(global.tunnels);
+  const tunnels = []
 
+  Object.keys(global.tunnels).forEach(tunnelId => {
+    const tunnel = global.tunnels[tunnelId]
+
+    tunnels.push({
+      tunnelId: tunnel.tunnelId,
+      url: tunnel.url,
+      token: tunnel.token,
+      createTime: tunnel.createTime,
+      socket: !!tunnel.socket, // 是否建立连接
+    })
+  });
+  
   ctx.body = {
     code: 0,
-    data: global.tunnels
+    data: tunnels
   };
 });
 
