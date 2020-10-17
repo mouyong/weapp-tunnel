@@ -17,7 +17,6 @@ const computeTunnelId = token => {
 
 // 业务服务器需要提供，token，url，signature
 router.post("/get/wsurl", ctx => {
-  console.log("api/get/wsurl", ctx.request.body)
   
   const { token, url, signature } = ctx.request.body;
   if (!token || !url || !signature) {
@@ -30,6 +29,8 @@ router.post("/get/wsurl", ctx => {
 
   if (!check(`${token}${url}`, signature)) {
     ctx.body = { code: -1, msg: "签名错误" };
+
+    console.debug(`get/wsurl 签名验证失败 客户端签名: ${signature} 服务端签名：`, compute(`${token}${url}`))
     return false;
   }
 

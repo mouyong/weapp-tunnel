@@ -4,28 +4,13 @@ const { check, compute } = require("../utils/signature");
 const ws = io => {
   const nsp = io.of("/weapp");
   nsp.on("connection", function(socket) {
-    console.debug('nsp connection', socket.handshake.query)
-
     let { token, signature, tunnelId } = socket.handshake.query;
-    if (!token || !signature || !tunnelId) {
-      console.debug('参数不正确，转发数据失败')
-      return
-    }
 
     const tunnel = global.tunnels[tunnelId];
-    if (!tunnel) {
-      socket.disconnect(false)
-      console.debug(`tunnelId ${tunnelId} 不存在`)
-      return
-    }
     
     tunnel.socket = socket;
     socket.on("msg", function(data) {
-      axios.post(tunnel.url, { tunnelId, token, data }).then(res => {
-        tunnel.socket.emit("msg", res.data)
-      }).catch(err => {
-        tunnel.socket.emit("msg", err)
-      });
+      axios.post(tunnel.url+"a", { tunnelId, token, data })
     });
 
     socket.on('disconnect',function(){
@@ -46,7 +31,6 @@ const ws = io => {
     if (!global.tunnels[tunnelId]) {
       socket.disconnect(false);
       console.debug(`io connection fail tunnelId ${tunnelId} 不存在`)
-      console.debug(`socket.handshake.query`, socket.handshake.query)
       return
     }
 
@@ -59,8 +43,6 @@ const ws = io => {
       console.debug(`签名数据 ${token} ${tunnelId}`)
       return
     }
-
-    console.debug(`io connection success tunnelId: ${tunnelId}`)
   });
 };
 

@@ -17,8 +17,6 @@ const handle = (socket, type, msg) => {
 };
 
 router.post("/ws/push", ctx => {
-  console.log("api/ws/push", ctx.request.body)
-
   // directive = {"type":"send","msg":{"a":456}}
   const { tunnelIds, directive, signature } = ctx.request.body;
   if (!tunnelIds || !directive || !signature) {
@@ -38,10 +36,9 @@ router.post("/ws/push", ctx => {
       type = directiveObj.type
       msg = directiveObj.msg
     } catch(e) {
-      console.debug("字符串解析失败，转发数据格式不正确", directive)
       ctx.body = {
         code: -1,
-        msg: "指令格式不正确"
+        msg: "转发指令格式不正确",
       };
       return
     }
@@ -52,7 +49,7 @@ router.post("/ws/push", ctx => {
 
   tunnelIds.forEach(tunnelId => {
     if (!global.tunnels[tunnelId]) {
-      console.debug(`api/ws/push tunnelId ${tunnelId} 不存在，跳过`)
+      console.debug(`ws/push tunnelId ${tunnelId} 不存在，跳过`)
       return
     }
     
