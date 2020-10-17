@@ -8,8 +8,10 @@ const handle = (socket, type, msg, tunnelId) => {
       socket.emit("msg", msg);
       break;
     case "close":
-      socket.disconnect(true);
+      socket.disconnect(false);
       delete global.tunnels[tunnelId];
+
+      console.log(`${tunnelId} 连接已关闭`)
       break;
     default:
       console.log("指令错误");
