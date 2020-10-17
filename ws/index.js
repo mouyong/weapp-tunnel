@@ -13,7 +13,7 @@ const ws = io => {
     console.debug(`nsp connection successful ${tunnelId} 已建立连接`)
     
     socket.on("msg", function(data) {
-      axios.post(tunnel.url+"a", { tunnelId, token, data })
+      axios.post(tunnel.url, { tunnelId, token, data }).then(res => res);
     });
 
     socket.on('disconnect',function(){
