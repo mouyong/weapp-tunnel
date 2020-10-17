@@ -17,13 +17,45 @@ const handle = (socket, type, msg) => {
 };
 
 router.post("/ws/push", ctx => {
+  console.log("api/ws/push", ctx.request.body)
+
   // directive = {"type":"send","msg":{"a":456}}
   const { tunnelIds, directive, signature } = ctx.request.body;
+  if (!tunnelIds || !directive || !signature) {
+    ctx.body = {
+      code: -1,
+      msg: "参数不正确"
+    };
+    return false;
+  }
+
   // TODO 签名验证
 
-  const { type, msg } = directive;
+  let type, msg
+  if (typeof directive === 'string') {
+    try {
+      directiveObj = JSON.parse(directive)
+      type = directiveObj.type
+      msg = directiveObj.msg
+    } catch(e) {
+      console.debug("字符串解析失败，转发数据格式不正确", directive)
+      ctx.body = {
+        code: -1,
+        msg: "指令格式不正确"
+      };
+      return
+    }
+  } else {
+    type = directive.type
+    msg = directive.msg
+  }
 
   tunnelIds.forEach(tunnelId => {
+    if (!global.tunnels[tunnelId]) {
+      console.debug(`api/ws/push tunnelId ${tunnelId} 不存在，跳过`)
+      return
+    }
+    
     const { socket } = global.tunnels[tunnelId];
     if (socket) {
       handle(socket, type, msg);

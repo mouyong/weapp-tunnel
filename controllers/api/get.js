@@ -17,6 +17,7 @@ const computeTunnelId = token => {
 
 // 业务服务器需要提供，token，url，signature
 router.post("/get/wsurl", ctx => {
+  console.log("api/get/wsurl", ctx.request.body)
   
   const { token, url, signature } = ctx.request.body;
   if (!token || !url || !signature) {
