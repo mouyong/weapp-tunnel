@@ -4,7 +4,8 @@
   "description": "一个信道服务",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "sh node_modules/.bin/cross-env PORT=8000 node index.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,8 @@
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.4.0",
     "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2"
   }
 }
